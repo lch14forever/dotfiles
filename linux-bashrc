@@ -1,0 +1,120 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# User specific aliases and functions
+source /mnt/software/etc/gis.bashrc
+
+# added
+alias grep='grep --color=auto'
+alias attach='reptyr'
+alias rm='rm -i'
+alias cp='cp -iv'                           # Preferred 'cp' implementation
+alias mv='mv -iv'                           # Preferred 'mv' implementation
+alias mkdir='mkdir -pv'                     # Preferred 'mkdir' implementation
+alias ll='ls -FGlAhp'                       # Preferred 'ls' implementation
+alias l='ls -CF'
+alias les='less' 
+cd() { builtin cd "$@" && l; }               # Always list directory contents upon 'cd'
+alias cd..='cd ../'                         # Go back 1 directory level (for fast typers)
+alias ..='cd ../'                           # Go back 1 directory level
+alias ...='cd ../../'                       # Go back 2 directory levels
+alias .3='cd ../../../'                     # Go back 3 directory levels
+alias .4='cd ../../../../'                  # Go back 4 directory levels
+alias .5='cd ../../../../../'               # Go back 5 directory levels
+alias f='open -a Finder ./'                 # f:            Opens current directory in MacOS Finder
+alias ~="cd ~"                              # ~:            Go Home
+alias c='clear'                             # c:            Clear terminal display
+alias path='echo -e ${PATH//:/\\n}'         # path:         Echo all executable Paths
+mcd () { mkdir -p "$1" && cd "$1"; }        # mcd:          Makes new Dir and jumps inside
+
+alias intq="qrsh  -pe OpenMP 3 -q interactive.q -l h_rt=24:00:00,mem_free=3G"
+alias ioq="qrsh  -pe OpenMP 1 -q ionode.q -l h_rt=120:00:00,mem_free=2G"
+alias submit="echo qsub  -cwd -V -N log -l mem_free=100G,h_rt=24:0:0 -pe OpenMP 20 -b y"
+
+
+# Environment variables 
+export PYTHONPATH=~/local/lib/python2.7/site-packages:${PYTHONPATH}
+export LD_LIBRARY_PATH=~/local/lib:$LD_LIBRARY_PATH
+export PATH=$PATH:~/local/bin
+export PATH=$PATH:~/local/bin/bpipe-0.9.8.6_rc/bin
+export NXF_JAVA_HOME=/etc/alternatives/java_sdk_1.8.0/
+
+##JAGS
+export PKG_CONFIG_PATH=/mnt/software/stow/JAGS-4.2.0/lib/pkgconfig/:$PKG_CONFIG_PATH
+
+export EDITOR=emacs
+
+
+## the last directory was saved to 
+export OLDPWD=`cat ~/.lastdirectory`
+
+shopt -s cdspell
+
+
+
+#   -------------------------------
+#   1.  ENVIRONMENT CONFIGURATION
+#   -------------------------------
+
+#   Change Prompt
+#   ------------------------------------------------------------
+
+tty -s && export PS1="| \[$(tput bold)$(tput setaf 1)\]\w\[$(tput sgr0)\]\[$(tput bold)$(tput setaf 0)\]@\[$(tput sgr0)\]\[$(tput bold)$(tput setaf 4)\]\h\[$(tput sgr0)\] [\t] \n| \[$(tput bold)$(tput setaf 2)\]~>\[$(tput sgr0)\] "
+tty -s && export PS2="| \[$(tput bold)$(tput setaf 2)\]=>\[$(tput sgr0)\] "
+
+
+#   mans:   Search manpage given in agument '1' for term given in argument '2' (case insensitive)
+#           displays paginated result with colored search terms and two lines surrounding each hit.             Example: mans mplayer codec
+#   --------------------------------------------------------------------
+mans () {
+    man $1 | grep -iC2 --color=always $2 | less
+}
+
+#   extract:  Extract most know archives with one command
+#   ---------------------------------------------------------
+extract () {
+    if [ -f $1 ] ; then
+        case $1 in
+            *.tar.bz2)   tar xjf $1     ;;
+            *.tar.gz)    tar xzf $1     ;;
+            *.bz2)       bunzip2 $1     ;;
+            *.rar)       unrar e $1     ;;
+            *.gz)        gunzip $1      ;;
+            *.tar)       tar xf $1      ;;
+            *.tbz2)      tar xjf $1     ;;
+            *.tgz)       tar xzf $1     ;;
+            *.zip)       unzip $1       ;;
+            *.Z)         uncompress $1  ;;
+            *.7z)        7z x $1        ;;
+            *)     echo "'$1' cannot be extracted via extract()" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+PATH="/home/lich/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PERL5LIB="/home/lich/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/home/lich/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/home/lich/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/home/lich/perl5"; export PERL_MM_OPT;
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/mnt/software/unstowable/miniconda3-4.6.14/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/mnt/software/unstowable/miniconda3-4.6.14/etc/profile.d/conda.sh" ]; then
+        . "/mnt/software/unstowable/miniconda3-4.6.14/etc/profile.d/conda.sh"
+    else
+        export PATH="/mnt/software/unstowable/miniconda3-4.6.14/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
